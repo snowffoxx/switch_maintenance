@@ -4,7 +4,7 @@ from paramiko import *
 
 
 cisco_cmd = [
-    'terminal length 0', 'show hardware', 'show env power', 'show env temp', 'show env temp',
+    'terminal length 0', 'show hardware', 'show env', 'show env all',
     'show processes cpu', 'show processes mem', 'exit',
 ]
 
@@ -83,18 +83,3 @@ class GatherData:
             print(messages)
             return messages
 
-
-if __name__ == '__main__':
-    dev_telnet = {
-        'ip': '172.16.10.5', 'user': 'admin', 'password': 'yourpassword',
-        'protocol': 'telnet', 'port': 23, 'vendor': 'cisco', 'check': 1
-    }
-    dev_ssh = {
-        'ip': '192.168.100.120', 'user': 'admin', 'password': 'yourpassword',
-        'protocol': 'ssh', 'port': 22, 'vendor': 'cisco', 'check': '1'
-    }
-
-    # data = GatherData(dev_telnet).gather_telnet()
-    # print(data)
-    data = GatherData(dev_ssh).gather_ssh()
-    print(data)
