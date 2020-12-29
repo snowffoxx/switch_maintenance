@@ -19,7 +19,7 @@ class CiscoParse:
         return hostname
 
     def dev_model(self):
-        p = re.compile('^cisco WS-')
+        p = re.compile('^cisco WS-|Cisco WS-')
         for i in self.data:
             m = p.search(i)
             if m:
@@ -68,13 +68,13 @@ class CiscoParse:
         return cpu_idle
 
     def mem_usage(self):
-        p = re.compile('Processor Pool Total:')
+        p = re.compile('Processor Pool Total:|^Total:')
         for i in self.data:
             m = p.search(i)
             if m:
                 i = ' '.join(i.split())             # remove many spaces
                 tmp = i.split(' ')
-                total = int(tmp[-5])
+                total = int(tmp[-5].strip(','))
                 free = int(tmp[-1])
                 mem_free = int(free / total * 100)
                 return str(mem_free)
@@ -87,7 +87,7 @@ class CiscoParse:
             m = p.search(i)
             if m:
                 tmp = i.split(' ')
-                fan = tmp[-1]
+                fan = tmp[-1].strip('\r')
                 return fan
         fan = 'unknown'
         return fan
@@ -101,7 +101,7 @@ class CiscoParse:
                 tm = tp.search(i)
                 if tm:
                     tmp = i.split(' ')
-                    temperature = tmp[-1]
+                    temperature = tmp[-1].strip('\r')
                     return temperature
                 else:
                     tmp = i.split(' ')
@@ -112,17 +112,46 @@ class CiscoParse:
 
     def power_supply(self):
         ps = list()
-        p = re.compile('PS[0-9]{1}|POWER|Built-in')
+        power_supply = str()
+        p = re.compile('PS[0-9]+|POWER|Built-in')
         for i in self.data:
             m = p.search(i)
             if m:
                 i = ' '.join(i.split())
                 ps.append(i)
         if ps:
-            pass
+            power = list()
+            # C3550, C2950
+            p = re.compile('POWER')
+            for i in ps:
+                m = p.search(i)
+                if m:
+                    tmp = i.split(' ')
+                    power.append(tmp[-1].strip())
+
+            # C3560, C3750
+            p = re.compile('Built-in')
+            for i in ps:
+                m = p.search(i)
+                if m:
+                    tmp = i.split(' ')
+                    power.append(tmp[-1].strip())
+
+            # C-4507 power supply
+            p = re.compile('PS[0-9]+')
+            for i in ps:
+                m = p.search(i)
+                if m:
+                    tmp = i.split(' ')
+                    status = '%s: %s, %s' % (tmp[0], tmp[-3], tmp[-2],)
+                    power.append(status)
+
+            for i in power:
+                power_supply = power_supply + ' ' + i
+            return power_supply
         else:
-            powersupply = 'unknown'
-            return powersupply
+            power_supply = 'unknown'
+            return power_supply
 
 
 class ExosParse:
@@ -135,13 +164,14 @@ class NexusParse:
 
 if __name__ == '__main__':
     dev_telnet = {
-        'ip': '172.16.10.5', 'user': 'admin', 'password': 'yourpassword',
+        'ip': '165.132.246.15', 'user': 'wroot', 'password': 'n@m17P$&iu',
         'protocol': 'telnet', 'port': 23, 'vendor': 'cisco', 'check': 1
     }
     dev_ssh = {
-        'ip': '192.168.100.120', 'user': 'admin', 'password': 'yourpassword',
+        'ip': '106.249.232.120', 'user': 'wadmin', 'password': '@@ysmgr2017',
         'protocol': 'ssh', 'port': 22, 'vendor': 'cisco', 'check': '1'
     }
+
     data = GatherData(dev_telnet).gather_telnet()
     # print(data)
     # data = GatherData(dev_ssh).gather_ssh()

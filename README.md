@@ -1,5 +1,5 @@
 # switch_maintenance
-network switchs maintenance and reports - cisco, extreme exos.
+network switches maintenance and reports - cisco, extreme exos.
 
 Connect telnet or ssh and execute some commands.
 

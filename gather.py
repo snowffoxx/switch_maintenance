@@ -82,4 +82,3 @@ class GatherData:
             messages = 'Some error has occurred: %s %s' % (self.device['ip'], ex,)
             print(messages)
             return messages
-
