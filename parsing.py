@@ -155,7 +155,67 @@ class CiscoParse:
 
 
 class ExosParse:
-    pass
+    def __init__(self, data):
+        self.data = data.split('\n')
+
+    def hostname(self):
+        p = re.compile('.+[#]{1}exit')
+        for i in self.data:
+            m = p.search(i)
+            if m:
+                tmp1 = i.split('#')
+                tmp2 = tmp1[0]
+                if tmp2:
+                    h = tmp2.split('.')
+                    if h[0]:
+                        hostname = h[0]
+                        return hostname
+        hostname = 'unknown'
+        return hostname
+
+    def dev_model(self):
+        p = re.compile('System Type:')
+        for i in self.data:
+            m = p.search(i)
+            if m:
+                i = ' '.join(i.split())
+                tmp = i.split(':')
+                dev_model = tmp[-1].strip()
+                if dev_model:
+                    return dev_model
+        dev_model = 'unknown'
+        return dev_model
+
+    def os_ver(self):
+        p = re.compile('primary.cfg')
+        for i in self.data:
+            m = p.search(i)
+            if m:
+                i = ' '.join(i.split())
+                tmp = i.split(' ')
+                if tmp:
+                    version = tmp[-1].strip()
+                    return version
+        version = 'unknown'
+        return version
+
+    def uptime(self):
+
+
+    def cpu_usage(self):
+        pass
+
+    def mem_usage(self):
+        pass
+
+    def fan(self):
+        pass
+
+    def temperature(self):
+        pass
+
+    def power_supply(self):
+        pass
 
 
 class NexusParse:
@@ -164,11 +224,11 @@ class NexusParse:
 
 if __name__ == '__main__':
     dev_telnet = {
-        'ip': '165.132.246.15', 'user': 'wroot', 'password': 'n@m17P$&iu',
+        'ip': '192.168.0.15', 'user': 'admin', 'password': 'admin',
         'protocol': 'telnet', 'port': 23, 'vendor': 'cisco', 'check': 1
     }
     dev_ssh = {
-        'ip': '106.249.232.120', 'user': 'wadmin', 'password': '@@ysmgr2017',
+        'ip': '192.168.0.120', 'user': 'wadmin', 'password': 'admin',
         'protocol': 'ssh', 'port': 22, 'vendor': 'cisco', 'check': '1'
     }
 
