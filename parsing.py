@@ -163,6 +163,7 @@ class ExosParse:
         for i in self.data:
             m = p.search(i)
             if m:
+                print(i)
                 tmp1 = i.split('#')
                 tmp2 = tmp1[0]
                 if tmp2:
@@ -216,7 +217,7 @@ class ExosParse:
         for i in self.data:
             m = p.search(i)
             if m:
-                i = ' '.join(i.strip())
+                i = ' '.join(i.split())
                 tmp = i.split(' ')
                 if tmp[7]:
                     cpu_idle = tmp[7].strip()
@@ -226,15 +227,18 @@ class ExosParse:
 
     def mem_usage(self):
         meminfo = list()
-        p = re.compile('(KB):')
+        p = re.compile('KB')
         for i in self.data:
             m = p.search(i)
             if m:
                 tmp = i.split(':')
-                meminfo.append(tmp[-1].strip())
+                if len(tmp) == 2:
+                    print(tmp[1])
+                    meminfo.append(tmp[1].strip())
         if meminfo:
-            mem_free = int(meminfo[3]) / int(meminfo[0]) * 100
-            return str(mem_free + ' %')
+            print(meminfo)
+            mem_free = int(int(meminfo[3]) / int(meminfo[0]) * 100)
+            return str(mem_free) + '%'
         else:
             mem_free = 'unknown'
             return mem_free
@@ -299,13 +303,11 @@ if __name__ == '__main__':
         'protocol': 'telnet', 'port': 23, 'vendor': 'cisco', 'check': 1
     }
     dev_ssh = {
-        'ip': '192.168.10.25', 'user': 'wadmin', 'password': 'password',
+        'ip': '192.168.100.25', 'user': 'admin', 'password': 'passwd',
         'protocol': 'ssh', 'port': 22, 'vendor': 'exos', 'check': '1'
     }
 
     data = GatherData(dev_ssh).gather_ssh()
-    print(data)
-    # data = GatherData(dev_ssh).gather_ssh()
     # hostname = CiscoParse(data).hostname()
     # dev_model = CiscoParse(data).dev_model()
     # os_version = CiscoParse(data).os_ver()
@@ -314,10 +316,17 @@ if __name__ == '__main__':
     # fan = CiscoParse(data).fan()
     # temperature = CiscoParse(data).temperature()
 
-    # print(hostname)
-    # print(dev_model)
-    # print(os_version)
-    # print(cpu)
-    # print(mem)
+    hostname = ExosParse(data).hostname()
+    dev_model = ExosParse(data).dev_model()
+    os_version = ExosParse(data).os_ver()
+    cpu = ExosParse(data).cpu_usage()
+    mem = ExosParse(data).mem_usage()
+
+    print(hostname)
+    print(dev_model)
+    print(os_version)
+    print(dev_model)
+    print(cpu)
+    print(mem)
     # print(fan)
     # print(temperature)
