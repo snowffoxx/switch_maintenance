@@ -9,8 +9,8 @@ cisco_cmd = [
 ]
 
 exos_cmd = [
-    'disable clipaging', 'show switch', 'show fan', 'show temp', 'show power', 'show cpu', 'show memory',
-    'show slot', 'exit'
+    'disable clipaging', 'show switch', 'show fan', 'show temp', 'show power', 'top', 'q',
+    'show memory', 'show slot', 'exit'
 ]
 
 

@@ -200,21 +200,91 @@ class ExosParse:
         return version
 
     def uptime(self):
-
+        p = re.compile('System UpTime:')
+        for i in self.data:
+            m = p.search(i)
+            if m:
+                i = ' '.join(i.split())
+                tmp = i.split(':')
+                uptime = tmp[-1].strip()
+                return uptime
+        uptime = 'unknown'
+        return uptime
 
     def cpu_usage(self):
-        pass
+        p = re.compile('CPU:')
+        for i in self.data:
+            m = p.search(i)
+            if m:
+                i = ' '.join(i.strip())
+                tmp = i.split(' ')
+                if tmp[7]:
+                    cpu_idle = tmp[7].strip()
+                    return cpu_idle
+        cpu_idle = 'unknown'
+        return cpu_idle
 
     def mem_usage(self):
-        pass
+        meminfo = list()
+        p = re.compile('(KB):')
+        for i in self.data:
+            m = p.search(i)
+            if m:
+                tmp = i.split(':')
+                meminfo.append(tmp[-1].strip())
+        if meminfo:
+            mem_free = int(meminfo[3]) / int(meminfo[0]) * 100
+            return str(mem_free + ' %')
+        else:
+            mem_free = 'unknown'
+            return mem_free
 
     def fan(self):
         pass
 
     def temperature(self):
+
+        """
+        Field Replaceable Units               Temp (C)   Status   Min  Normal   Max
+        ---------------------------------------------------------------------------
+        Switch         : X440-24p               22.50    Normal   -10    0-48  55
+
+
+        Field Replaceable Units               Temp (C)   Status   Min  Normal   Max
+        ---------------------------------------------------------------------------
+        Slot-1         : G24Xc                  26.50    Normal   -10    0-50  60
+        Slot-2         : G24Xc                  25.50    Normal   -10    0-50  60
+        Slot-3         :
+        Slot-4         :
+        Slot-5         : 10G8Xc                 29.50    Normal   -10    0-50  60
+        Slot-6         : G48Tc                  27.50    Normal   -10    0-50  60
+        MSM-A          : MSM-48c                37.50    Normal   -10    0-50  60
+        MSM-B          : MSM-48c                37.50    Normal   -10    0-50  60
+        PSUCTRL-1      :                        33.25    Normal   -10    0-50  60
+        PSUCTRL-1      :
+        PSUCTRL-2      :                        34.55    Normal   -10    0-50  60
+        PSUCTRL-2      :
+        """
         pass
 
     def power_supply(self):
+        """
+        # show temp
+        Field Replaceable Units               Temp (C)   Status   Min  Normal   Max
+        ---------------------------------------------------------------------------
+        Slot-1         : G24Xc                  26.50    Normal   -10    0-50  60
+        Slot-2         : G24Xc                  25.50    Normal   -10    0-50  60
+        Slot-3         :
+        Slot-4         :
+        Slot-5         : 10G8Xc                 29.50    Normal   -10    0-50  60
+        Slot-6         : G48Tc                  27.50    Normal   -10    0-50  60
+        MSM-A          : MSM-48c                37.50    Normal   -10    0-50  60
+        MSM-B          : MSM-48c                37.50    Normal   -10    0-50  60
+        PSUCTRL-1      :                        33.25    Normal   -10    0-50  60
+        PSUCTRL-1      :
+        PSUCTRL-2      :                        34.55    Normal   -10    0-50  60
+        PSUCTRL-2      :
+        """
         pass
 
 
@@ -223,30 +293,31 @@ class NexusParse:
 
 
 if __name__ == '__main__':
+    # Test only.
     dev_telnet = {
         'ip': '192.168.0.15', 'user': 'admin', 'password': 'admin',
         'protocol': 'telnet', 'port': 23, 'vendor': 'cisco', 'check': 1
     }
     dev_ssh = {
-        'ip': '192.168.0.120', 'user': 'wadmin', 'password': 'admin',
-        'protocol': 'ssh', 'port': 22, 'vendor': 'cisco', 'check': '1'
+        'ip': '192.168.10.25', 'user': 'wadmin', 'password': 'password',
+        'protocol': 'ssh', 'port': 22, 'vendor': 'exos', 'check': '1'
     }
 
-    data = GatherData(dev_telnet).gather_telnet()
-    # print(data)
+    data = GatherData(dev_ssh).gather_ssh()
+    print(data)
     # data = GatherData(dev_ssh).gather_ssh()
-    hostname = CiscoParse(data).hostname()
-    dev_model = CiscoParse(data).dev_model()
-    os_version = CiscoParse(data).os_ver()
-    cpu = CiscoParse(data).cpu_usage()
-    mem = CiscoParse(data).mem_usage()
-    fan = CiscoParse(data).fan()
-    temperature = CiscoParse(data).temperature()
+    # hostname = CiscoParse(data).hostname()
+    # dev_model = CiscoParse(data).dev_model()
+    # os_version = CiscoParse(data).os_ver()
+    # cpu = CiscoParse(data).cpu_usage()
+    # mem = CiscoParse(data).mem_usage()
+    # fan = CiscoParse(data).fan()
+    # temperature = CiscoParse(data).temperature()
 
-    print(hostname)
-    print(dev_model)
-    print(os_version)
-    print(cpu)
-    print(mem)
-    print(fan)
-    print(temperature)
+    # print(hostname)
+    # print(dev_model)
+    # print(os_version)
+    # print(cpu)
+    # print(mem)
+    # print(fan)
+    # print(temperature)
