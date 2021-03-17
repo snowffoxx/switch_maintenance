@@ -159,17 +159,16 @@ class ExosParse:
         self.data = data.split('\n')
 
     def hostname(self):
-        p = re.compile('.+[#]{1}exit')
+        p = re.compile('.+[#]{1}')
         for i in self.data:
             m = p.search(i)
             if m:
-                print(i)
                 tmp1 = i.split('#')
                 tmp2 = tmp1[0]
                 if tmp2:
                     h = tmp2.split('.')
                     if h[0]:
-                        hostname = h[0]
+                        hostname = h[0].strip()
                         return hostname
         hostname = 'unknown'
         return hostname
@@ -188,10 +187,11 @@ class ExosParse:
         return dev_model
 
     def os_ver(self):
-        p = re.compile('primary.cfg')
+        p = re.compile('^primary.cfg')
         for i in self.data:
             m = p.search(i)
             if m:
+                print(i)
                 i = ' '.join(i.split())
                 tmp = i.split(' ')
                 if tmp:
@@ -233,8 +233,7 @@ class ExosParse:
             if m:
                 tmp = i.split(':')
                 if len(tmp) == 2:
-                    print(tmp[1])
-                    meminfo.append(tmp[1].strip())
+                     meminfo.append(tmp[1].strip())
         if meminfo:
             print(meminfo)
             mem_free = int(int(meminfo[3]) / int(meminfo[0]) * 100)
@@ -321,11 +320,13 @@ if __name__ == '__main__':
     os_version = ExosParse(data).os_ver()
     cpu = ExosParse(data).cpu_usage()
     mem = ExosParse(data).mem_usage()
+    uptime = ExosParse(data).uptime()
 
     print(hostname)
     print(dev_model)
     print(os_version)
     print(dev_model)
+    print(uptime)
     print(cpu)
     print(mem)
     # print(fan)
